@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FluentizyLaravelToolsCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'fluentizy-laravel-tools';
 
     public $description = 'My command';
 

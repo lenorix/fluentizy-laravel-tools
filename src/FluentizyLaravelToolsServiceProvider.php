@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace Lenorix\FluentizyLaravelTools;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use VendorName\Skeleton\Commands\SkeletonCommand;
+use Lenorix\FluentizyLaravelTools\Commands\FluentizyLaravelToolsCommand;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class FluentizyLaravelToolsServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -16,10 +16,10 @@ class SkeletonServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('skeleton')
+            ->name('fluentizy-laravel-tools')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_migration_table_name_table')
-            ->hasCommand(SkeletonCommand::class);
+            ->hasMigration('create_fluentizy_laravel_tools_table')
+            ->hasCommand(FluentizyLaravelToolsCommand::class);
     }
 }
