@@ -26,7 +26,10 @@ class LangExtractCommand extends Command
             }
 
             if (empty($locales)) {
-                $this->fail('No locale specified and no lang files found in ' . lang_path());
+                $this->error(__('fluentizy-tools::translations.locale-error', [
+                    'path' => lang_path()
+                ], locale: config('app.locale')));
+                return self::FAILURE;
             }
         }
 
@@ -47,7 +50,10 @@ class LangExtractCommand extends Command
             }
 
             file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-            $this->info($this->emoji($locale) . '  Ready ' . $outputFile);
+            $this->info(__('fluentizy-tools::translations.ready', [
+                'path' => $outputFile,
+                'emoji' => $this->emoji($locale)
+            ], locale: config('app.locale')));
         }
 
         return self::SUCCESS;

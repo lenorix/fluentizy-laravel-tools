@@ -16,10 +16,11 @@ class FluentizyLaravelToolsServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('fluentizy-laravel-tools')
+            ->name('fluentizy-tools')
             //->hasConfigFile()
             //->hasViews()
             //->hasMigration('create_fluentizy_laravel_tools_table')
+            ->hasTranslations()
             ->hasCommand(LangExtractCommand::class);
     }
 }

@@ -22,7 +22,13 @@ composer require --dev lenorix/fluentizy-laravel-tools
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="fluentizy-laravel-tools-config"
+php artisan vendor:publish --tag="fluentizy-tools-config"
+```
+
+You can publish the translation files with:
+
+```bash
+php artisan vendor:publish --tag="fluentizy-tools-translations"
 ```
 
 ## Usage
