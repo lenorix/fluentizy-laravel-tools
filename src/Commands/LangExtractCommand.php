@@ -4,11 +4,11 @@ namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
 
-class FluentizyLaravelToolsCommand extends Command
+class LangExtractCommand extends Command
 {
-    public $signature = 'fluentizy-laravel-tools';
+    public $signature = 'lang:extract';
 
-    public $description = 'My command';
+    public $description = 'Extract translation strings to lang files';
 
     public function handle(): int
     {

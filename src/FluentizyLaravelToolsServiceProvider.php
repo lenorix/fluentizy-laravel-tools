@@ -4,7 +4,7 @@ namespace Lenorix\FluentizyLaravelTools;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Lenorix\FluentizyLaravelTools\Commands\FluentizyLaravelToolsCommand;
+use Lenorix\FluentizyLaravelTools\Commands\LangExtractCommand;
 
 class FluentizyLaravelToolsServiceProvider extends PackageServiceProvider
 {
@@ -17,9 +17,9 @@ class FluentizyLaravelToolsServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('fluentizy-laravel-tools')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_fluentizy_laravel_tools_table')
-            ->hasCommand(FluentizyLaravelToolsCommand::class);
+            //->hasConfigFile()
+            //->hasViews()
+            //->hasMigration('create_fluentizy_laravel_tools_table')
+            ->hasCommand(LangExtractCommand::class);
     }
 }
