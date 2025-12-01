@@ -73,7 +73,7 @@ class LangExtractCommand extends Command
             ],
             // globe for esperanto, interlingua, etc
             '🌐' => [
-                'eo',
+                'eo', 'ia',
             ],
         ];
 
