@@ -38,10 +38,21 @@ php artisan vendor:publish --tag="fluentizy-tools-translations"
 To extract translations from your codebase, run:
 
 ```bash
+php artisan lang:extract es
+```
+
+This command will update your translation file based on `__('...')` usages in your code.
+
+If there are `lang/*.json` files, to update all these files, run:
+
+```bash
 php artisan lang:extract
 ```
 
-This command will update your translation files based on `__('...')` usages in your code.
+Behavior:
+- Strings that are already translated will not be modified.
+- If a string is missing in the translation file, it will be added with an empty value.
+- If a string exists in the translation file but is not found in the codebase, it will be removed.
 
 ## Testing
 
