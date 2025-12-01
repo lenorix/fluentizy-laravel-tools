@@ -6,41 +6,73 @@ use Illuminate\Console\Command;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {locale}';
+    public $signature = 'lang:extract {locale?}';
 
     public $description = 'Extract translation strings to lang files';
 
     public function handle(): int
     {
         $locale = $this->argument('locale');
+        $locales = [];
+
+        if ($locale) {
+            $locales[] = $locale;
+        } else {
+            $files = scandir(lang_path());
+            foreach ($files as $file) {
+                if (str_ends_with($file, '.json')) {
+                    $locales[] = str_replace('.json', '', $file);
+                }
+            }
+
+            if (empty($locales)) {
+                $this->fail('No locale specified and no lang files found in ' . lang_path());
+            }
+        }
+
+        $newTranslations = $this->extract();
+        foreach ($locales as $locale) {
+            gc_collect_cycles();
+
+            $oldTranslations = [];
+            $outputFile = lang_path($locale . '.json');
+
+            if (file_exists($outputFile)) {
+                $oldTranslations = json_decode(file_get_contents($outputFile), true);
+            }
+
+            $translations = [];
+            foreach ($newTranslations as $key => $value) {
+                $translations[$key] = $oldTranslations[$key] ?? $value;
+            }
+
+            file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            $this->info($this->emoji($locale) . '  Ready ' . $outputFile);
+        }
+
+        return self::SUCCESS;
+    }
+
+    private function extract(): array
+    {
         $directories = [
             base_path('app'),
             base_path('routes'),
             base_path('config'),
             base_path('resources/views'),
         ];
-        $outputFile = lang_path($locale . '.json');
-
-        $oldTranslations = [];
         $newTranslations = [];
-
-        if (file_exists($outputFile)) {
-            $oldTranslations = json_decode(file_get_contents($outputFile), true);
-        }
 
         foreach ($directories as $directory) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
             foreach ($files as $file) {
                 if ($file->isFile() && in_array($file->getExtension(), ['php', 'blade.php'])) {
                     $content = file_get_contents($file->getPathname());
-
-                    // Regex to find all instances of __()
                     preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]\s*\)/", $content, $matches);
 
-                    // Store the results
                     foreach ($matches[1] as $key) {
                         if (! isset($newTranslations[$key])) {
-                            $newTranslations[$key] = $oldTranslations[$key] ?? $key;
+                            $newTranslations[$key] = $key;
                         }
                     }
                 }
@@ -48,10 +80,7 @@ class LangExtractCommand extends Command
         }
 
         ksort($newTranslations);
-
-        file_put_contents($outputFile, json_encode($newTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        $this->info($this->emoji($locale) . '  Ready ' . $outputFile);
-        return self::SUCCESS;
+        return $newTranslations;
     }
 
     private function emoji(string $locale): string
