@@ -21,7 +21,12 @@ class LangExtractCommand extends Command
         ];
         $outputFile = lang_path($locale . '.json');
 
-        $translations = [];
+        $oldTranslations = [];
+        $newTranslations = [];
+
+        if (file_exists($outputFile)) {
+            $oldTranslations = json_decode(file_get_contents($outputFile), true);
+        }
 
         foreach ($directories as $directory) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
@@ -34,18 +39,18 @@ class LangExtractCommand extends Command
 
                     // Store the results
                     foreach ($matches[1] as $key) {
-                        if (! isset($translations[$key])) {
-                            $translations[$key] = $key;  // Initial extraction without translation
+                        if (! isset($newTranslations[$key])) {
+                            $newTranslations[$key] = $oldTranslations[$key] ?? $key;
                         }
                     }
                 }
             }
         }
 
-        ksort($translations);
+        ksort($newTranslations);
 
-        file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT));
-        $this->comment($this->emoji($locale) . '  ' . $outputFile);
+        file_put_contents($outputFile, json_encode($newTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $this->info($this->emoji($locale) . '  Ready ' . $outputFile);
         return self::SUCCESS;
     }
 
