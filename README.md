@@ -5,11 +5,13 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/lenorix/fluentizy-laravel-tools/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/lenorix/fluentizy-laravel-tools/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/lenorix/fluentizy-laravel-tools.svg?style=flat-square)](https://packagist.org/packages/lenorix/fluentizy-laravel-tools)
 
-It helps you to internationalize and localize your Laravel applications easily.
+Internationalize and localize your Laravel applications easily.
 
 ## Support us
 
 Help us continue developing and maintaining this package by sponsoring us.
+
+Also, using [fluentizy](https://fluentizy.lenorix.com) is a great way to support the project!
 
 ## Installation
 
