@@ -71,7 +71,6 @@ class LangExtractCommand extends Command
                 'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'et', 'lv', 'lt', 'hr',
                 'sr', 'bg', 'el', 'hy', 'az', 'ka', 'te', 'ta', 'ml', 'kn', 'mr',
             ],
-            // globe for esperanto, interlingua, etc
             '🌐' => [
                 'eo', 'ia',
             ],
