@@ -27,8 +27,9 @@ class LangExtractCommand extends Command
 
             if (empty($locales)) {
                 $this->error(__('fluentizy-tools::translations.locale-error', [
-                    'path' => lang_path()
+                    'path' => lang_path(),
                 ], locale: config('app.locale')));
+
                 return self::FAILURE;
             }
         }
@@ -38,7 +39,7 @@ class LangExtractCommand extends Command
             gc_collect_cycles();
 
             $oldTranslations = [];
-            $outputFile = lang_path($locale . '.json');
+            $outputFile = lang_path($locale.'.json');
 
             if (file_exists($outputFile)) {
                 $oldTranslations = json_decode(file_get_contents($outputFile), true);
@@ -52,7 +53,7 @@ class LangExtractCommand extends Command
             file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
             $this->info(__('fluentizy-tools::translations.ready', [
                 'path' => $outputFile,
-                'emoji' => $this->emoji($locale)
+                'emoji' => $this->emoji($locale),
             ], locale: config('app.locale')));
         }
 
@@ -86,12 +87,13 @@ class LangExtractCommand extends Command
         }
 
         ksort($newTranslations);
+
         return $newTranslations;
     }
 
     private function emoji(string $locale): string
     {
-        [$language, $country] = explode('_', $locale . '_');
+        [$language, $country] = explode('_', $locale.'_');
         $language = strtolower($language);
         $country = strtolower($country);
 

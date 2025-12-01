@@ -3,8 +3,8 @@
 namespace Lenorix\FluentizyLaravelTools\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Lenorix\FluentizyLaravelTools\FluentizyLaravelToolsServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
