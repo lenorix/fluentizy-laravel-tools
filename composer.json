@@ -1,13 +1,14 @@
 {
     "name": "lenorix/fluentizy-laravel-tools",
-    "description": "This is my package fluentizy-laravel-tools",
+    "description": "A Laravel package providing tools for localization and integration with Fluentizy",
     "keywords": [
         "lenorix",
+        "fluentizy",
         "laravel",
         "fluentizy-laravel-tools"
     ],
     "homepage": "https://github.com/lenorix/fluentizy-laravel-tools",
-    "license": "MIT",
+    "license": "Unlicense",
     "authors": [
         {
             "name": "lenorix",
