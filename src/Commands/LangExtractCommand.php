@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {locale?}';
+    public $signature = 'lang:extract {--src=* : Source dir to scan} {locale? : Locale to extract translations for}';
 
     public $description = 'Extract translation strings to lang files';
 
@@ -23,8 +23,23 @@ class LangExtractCommand extends Command
             return self::FAILURE;
         }
 
+        $sourceDirs = $this->option('src');
+        if (!empty($sourceDirs)) {
+            $realSourceDirs = [];
+            foreach ($sourceDirs as $dir) {
+                $realDir = realpath($dir);
+                if ($realDir && is_dir($realDir)) {
+                    $realSourceDirs[] = $realDir;
+                }
+            }
+            $sourceDirs = $realSourceDirs;
+            unset($realSourceDirs);
+        } else {
+            $sourceDirs = null;
+        }
+
         try {
-            $newTranslations = $this->extract();
+            $newTranslations = $this->extract($sourceDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -56,17 +71,17 @@ class LangExtractCommand extends Command
     }
 
     /**
-     * @param string|null $directory Directory to scan, or null for default directories
+     * @param array|null $sourceDirs
      * @return array Extracted translation strings
      * @throws \Exception When file processing fails
      */
-    private function extract(?string $directory = null): array
+    private function extract(?array $sourceDirs = null): array
     {
         $directories = [];
         $newTranslations = [];
 
-        if ($directory) {
-            $directories[] = $directory;
+        if ($sourceDirs) {
+            $directories = $sourceDirs;
         } else {
             $directories[] = base_path('app');
             $directories[] = base_path('routes');
