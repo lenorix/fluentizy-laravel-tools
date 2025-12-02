@@ -1,6 +1,6 @@
 {
     "name": "lenorix/fluentizy-laravel-tools",
-    "description": "A Laravel package providing tools for localization and integration with Fluentizy",
+    "description": "Extract all translation strings from your codebase and manage your language files effortlessly",
     "keywords": [
         "lenorix",
         "fluentizy",

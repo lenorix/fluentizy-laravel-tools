@@ -16,7 +16,7 @@ class LangExtractCommand extends Command
         {locale? : Locale to extract translations for}
     ';
 
-    public $description = 'Extract translation strings to lang files';
+    public $description = 'Extract translation strings to lang files ready to be translated or uploaded to fluentizy.lenorix.com';
 
     public function handle(): int
     {
