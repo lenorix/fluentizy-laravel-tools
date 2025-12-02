@@ -13,9 +13,7 @@ class LangExtractCommand extends Command
 
     public function handle(): int
     {
-        $locale = $this->argument('locale');
-        $locales = $this->locales($locale);
-
+        $locales = $this->locales($this->argument('locale'));
         if (empty($locales)) {
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
@@ -42,7 +40,6 @@ class LangExtractCommand extends Command
                 'emoji' => $this->emoji($locale),
             ], locale: config('app.locale')));
         }
-
         return self::SUCCESS;
     }
 
