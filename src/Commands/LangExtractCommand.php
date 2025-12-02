@@ -33,19 +33,10 @@ class LangExtractCommand extends Command
         foreach ($locales as $locale) {
             gc_collect_cycles();
 
-            $oldTranslations = [];
             $outputFile = lang_path($locale.'.json');
-
-            if (file_exists($outputFile)) {
-                $oldTranslations = json_decode(file_get_contents($outputFile), true);
-            }
-
-            $translations = [];
-            foreach ($newTranslations as $key => $value) {
-                $translations[$key] = $oldTranslations[$key] ?? $value;
-            }
-
+            $translations = $this->recoverPreviousTranslations($outputFile, $newTranslations);
             file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
             $this->info(__('fluentizy-tools::translations.ready', [
                 'path' => $outputFile,
                 'emoji' => $this->emoji($locale),
@@ -53,6 +44,19 @@ class LangExtractCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    private function recoverPreviousTranslations(string $outputFile, array $newTranslations): array
+    {
+        $oldTranslations = [];
+        if (file_exists($outputFile)) {
+            $oldTranslations = json_decode(file_get_contents($outputFile), true);
+        }
+        $translations = [];
+        foreach ($newTranslations as $key => $value) {
+            $translations[$key] = $oldTranslations[$key] ?? $value;
+        }
+        return $translations;
     }
 
     /**
@@ -107,6 +111,46 @@ class LangExtractCommand extends Command
         return $matches[1];
     }
 
+    /**
+     * @param string|null $locale
+     * @return array
+     */
+    private function locales(?string $locale): array
+    {
+        if ($locale) {
+            return [$locale];
+        }
+
+        $locales = [];
+        $files = scandir(lang_path());
+        foreach ($files as $file) {
+            if (str_ends_with($file, '.json')) {
+                $locales[] = str_replace('.json', '', $file);
+            }
+        }
+        return $locales;
+    }
+
+    /**
+     * @param array|null $sourceDirs
+     * @return array|null
+     */
+    private function srcDirs(?array $sourceDirs): ?array
+    {
+        if (empty($sourceDirs)) {
+            return null;
+        }
+
+        $realSourceDirs = [];
+        foreach ($sourceDirs as $dir) {
+            $realDir = realpath($dir);
+            if ($realDir && is_dir($realDir)) {
+                $realSourceDirs[] = $realDir;
+            }
+        }
+        return $realSourceDirs;
+    }
+
     private function emoji(string $locale): string
     {
         [$language, $country] = explode('_', $locale.'_');
@@ -142,45 +186,5 @@ class LangExtractCommand extends Command
         }
 
         return '🌐';
-    }
-
-    /**
-     * @param string|null $locale
-     * @return array
-     */
-    public function locales(?string $locale): array
-    {
-        if ($locale) {
-            return [$locale];
-        }
-
-        $locales = [];
-        $files = scandir(lang_path());
-        foreach ($files as $file) {
-            if (str_ends_with($file, '.json')) {
-                $locales[] = str_replace('.json', '', $file);
-            }
-        }
-        return $locales;
-    }
-
-    /**
-     * @param array|null $sourceDirs
-     * @return array|null
-     */
-    public function srcDirs(?array $sourceDirs): ?array
-    {
-        if (empty($sourceDirs)) {
-            return null;
-        }
-
-        $realSourceDirs = [];
-        foreach ($sourceDirs as $dir) {
-            $realDir = realpath($dir);
-            if ($realDir && is_dir($realDir)) {
-                $realSourceDirs[] = $realDir;
-            }
-        }
-        return $realSourceDirs;
     }
 }
