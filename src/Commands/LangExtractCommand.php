@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {--src=* : Source dir to scan} {locale? : Locale to extract translations for}';
+    public $signature = 'lang:extract {--json : Use JSON format} {--src=* : Source dir to scan} {locale? : Locale to extract translations for}';
 
     public $description = 'Extract translation strings to lang files';
 
@@ -32,7 +32,13 @@ class LangExtractCommand extends Command
 
         foreach ($locales as $locale) {
             gc_collect_cycles();
-            $outputFile = $this->updateLocaleJson($locale, $newTranslations);
+
+            if ($this->option('json')) {
+                $outputFile = $this->updateLocaleJson($locale, $newTranslations);
+            } else {
+                $outputFile = $this->updateLocalePhp($locale, $newTranslations);
+            }
+
             $this->info(__('fluentizy-tools::translations.ready', [
                 'path' => $outputFile,
                 'emoji' => $this->emoji($locale),
@@ -52,6 +58,22 @@ class LangExtractCommand extends Command
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
         file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
+        return $outputFile;
+    }
+
+    private function updateLocalePhp(string $locale, array $newTranslations, string $filename = 'translations'): string
+    {
+        $outputFile = lang_path($locale . '/' . $filename . '.php');
+        $oldTranslations = [];
+        if (file_exists($outputFile)) {
+            $oldTranslations = include $outputFile;
+            if (!is_array($oldTranslations)) {
+                $oldTranslations = [];
+            }
+        }
+        $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
+        $content = "<?php\n\nreturn " . var_export($translations, true) . ";\n";
+        file_put_contents($outputFile, $content);
         return $outputFile;
     }
 
