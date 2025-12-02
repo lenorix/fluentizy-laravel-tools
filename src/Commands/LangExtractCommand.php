@@ -23,23 +23,8 @@ class LangExtractCommand extends Command
             return self::FAILURE;
         }
 
-        $sourceDirs = $this->option('src');
-        if (!empty($sourceDirs)) {
-            $realSourceDirs = [];
-            foreach ($sourceDirs as $dir) {
-                $realDir = realpath($dir);
-                if ($realDir && is_dir($realDir)) {
-                    $realSourceDirs[] = $realDir;
-                }
-            }
-            $sourceDirs = $realSourceDirs;
-            unset($realSourceDirs);
-        } else {
-            $sourceDirs = null;
-        }
-
         try {
-            $newTranslations = $this->extract($sourceDirs);
+            $newTranslations = $this->extract($this->srcDirs($this->option('src')));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -177,5 +162,25 @@ class LangExtractCommand extends Command
             }
         }
         return $locales;
+    }
+
+    /**
+     * @param array|null $sourceDirs
+     * @return array|null
+     */
+    public function srcDirs(?array $sourceDirs): ?array
+    {
+        if (empty($sourceDirs)) {
+            return null;
+        }
+
+        $realSourceDirs = [];
+        foreach ($sourceDirs as $dir) {
+            $realDir = realpath($dir);
+            if ($realDir && is_dir($realDir)) {
+                $realSourceDirs[] = $realDir;
+            }
+        }
+        return $realSourceDirs;
     }
 }
