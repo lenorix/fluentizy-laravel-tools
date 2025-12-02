@@ -30,21 +30,30 @@ class LangExtractCommand extends Command
 
         foreach ($locales as $locale) {
             gc_collect_cycles();
-
-            $outputFile = lang_path($locale.'.json');
-            $oldTranslations = [];
-            if (file_exists($outputFile)) {
-                $oldTranslations = json_decode(file_get_contents($outputFile), true);
-            }
-            $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-            file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-
+            $outputFile = $this->updateLocaleJson($locale, $newTranslations);
             $this->info(__('fluentizy-tools::translations.ready', [
                 'path' => $outputFile,
                 'emoji' => $this->emoji($locale),
             ], locale: config('app.locale')));
         }
         return self::SUCCESS;
+    }
+
+    /**
+     * @param string $locale
+     * @param array $newTranslations
+     * @return string
+     */
+    private function updateLocaleJson(string $locale, array $newTranslations): string
+    {
+        $outputFile = lang_path($locale . '.json');
+        $oldTranslations = [];
+        if (file_exists($outputFile)) {
+            $oldTranslations = json_decode(file_get_contents($outputFile), true);
+        }
+        $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
+        file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        return $outputFile;
     }
 
     private function recoverPreviousTranslations(array $oldTranslations, array $newTranslations): array
