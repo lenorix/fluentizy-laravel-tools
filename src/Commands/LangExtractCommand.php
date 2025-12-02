@@ -4,6 +4,8 @@ namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Lenorix\FluentizyLaravelTools\Services\Formats\JsonTranslations;
+use Lenorix\FluentizyLaravelTools\Services\Formats\PhpTranslations;
 use Lenorix\FluentizyLaravelTools\Services\GlobeEmoji;
 use Lenorix\FluentizyLaravelTools\Services\TranslationsExtractor;
 
@@ -67,6 +69,9 @@ class LangExtractCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @throws \Exception When file read/write fails
+     */
     private function updateLocaleJson(string $locale, array $newTranslations, ?string $outDir): string
     {
         $subPath = $locale.'.json';
@@ -76,14 +81,17 @@ class LangExtractCommand extends Command
 
         $oldTranslations = [];
         if (file_exists($outputFile)) {
-            $oldTranslations = json_decode(file_get_contents($outputFile), true);
+            $oldTranslations = app(JsonTranslations::class)->loadFromFile($outputFile);
         }
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-        file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        app(JsonTranslations::class)->saveToFile($translations, $outputFile);
 
         return $outputFile;
     }
 
+    /**
+     * @throws \Exception When file read/write fails
+     */
     private function updateLocalePhp(string $locale, array $newTranslations, ?string $outDir, string $filename = 'translations'): string
     {
         $subPath = $locale.'/'.$filename.'.php';
@@ -93,27 +101,16 @@ class LangExtractCommand extends Command
 
         $oldTranslations = [];
         if (file_exists($outputFile)) {
-            $oldTranslations = include $outputFile;
-            if (! is_array($oldTranslations)) {
-                $oldTranslations = [];
-            }
+            $oldTranslations = app(PhpTranslations::class)->loadFromFile($outputFile);
         }
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-
-        $content = "<?php\n\nreturn [";
-        foreach ($translations as $key => $value) {
-            $escapedKey = str_replace("'", "\\'", $key);
-            $escapedValue = str_replace("'", "\\'", $value);
-            $content .= "\n    '".$escapedKey."' => '".$escapedValue."',";
-        }
-        $content .= "\n];\n";
 
         $dir = dirname($outputFile);
         if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
-        file_put_contents($outputFile, $content);
 
+        app(PhpTranslations::class)->saveToFile($translations, $outputFile);
         return $outputFile;
     }
 
