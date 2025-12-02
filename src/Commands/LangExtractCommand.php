@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {--json : Use JSON format} {--src=* : Source dir to scan} {locale? : Locale to extract translations for}';
+    public $signature = 'lang:extract {--json : Use JSON format} {--src=* : Source dir to scan} {--out= : Output dir} {locale? : Locale to extract translations for}';
 
     public $description = 'Extract translation strings to lang files';
 
     public function handle(): int
     {
-        $locales = $this->locales($this->argument('locale'), $this->option('json'));
+        $outDir = $this->option('out') ?: null;
+
+        $locales = $this->locales($this->argument('locale'), $outDir, $this->option('json'));
         if (empty($locales)) {
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
@@ -32,9 +34,9 @@ class LangExtractCommand extends Command
             gc_collect_cycles();
 
             if ($this->option('json')) {
-                $outputFile = $this->updateLocaleJson($locale, $newTranslations);
+                $outputFile = $this->updateLocaleJson($locale, $newTranslations, $outDir);
             } else {
-                $outputFile = $this->updateLocalePhp($locale, $newTranslations);
+                $outputFile = $this->updateLocalePhp($locale, $newTranslations, $outDir);
             }
 
             $this->info(__('fluentizy-tools::translations.ready', [
@@ -45,14 +47,13 @@ class LangExtractCommand extends Command
         return self::SUCCESS;
     }
 
-    /**
-     * @param string $locale
-     * @param array $newTranslations
-     * @return string
-     */
-    private function updateLocaleJson(string $locale, array $newTranslations): string
+    private function updateLocaleJson(string $locale, array $newTranslations, ?string $outDir): string
     {
-        $outputFile = lang_path($locale.'.json');
+        $subPath = $locale . '.json';
+        $outputFile = $outDir
+            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $subPath
+            : lang_path($subPath);
+
         $oldTranslations = [];
         if (file_exists($outputFile)) {
             $oldTranslations = json_decode(file_get_contents($outputFile), true);
@@ -62,9 +63,13 @@ class LangExtractCommand extends Command
         return $outputFile;
     }
 
-    private function updateLocalePhp(string $locale, array $newTranslations, string $filename = 'translations'): string
+    private function updateLocalePhp(string $locale, array $newTranslations, ?string $outDir, string $filename = 'translations'): string
     {
-        $outputFile = lang_path($locale . '/' . $filename . '.php');
+        $subPath = $locale . '/' . $filename . '.php';
+        $outputFile = $outDir
+            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $subPath
+            : lang_path($subPath);
+
         $oldTranslations = [];
         if (file_exists($outputFile)) {
             $oldTranslations = include $outputFile;
@@ -163,18 +168,20 @@ class LangExtractCommand extends Command
      * @param string|null $locale
      * @return array
      */
-    private function locales(?string $locale, bool $json=false): array
+    private function locales(?string $locale, ?string $outDir, bool $json=false): array
     {
         if ($locale) {
             return [$locale];
         }
 
+        $langDir = $outDir ? rtrim($outDir, DIRECTORY_SEPARATOR) : lang_path();
+        $files = scandir($langDir);
+
         $locales = [];
-        $files = scandir(lang_path());
         foreach ($files as $file) {
             if ($json && str_ends_with($file, '.json')) {
                 $locales[] = str_replace('.json', '', $file);
-            } elseif (is_dir(lang_path($file)) && $file !== '.' && $file !== '..') {
+            } elseif (is_dir($langDir . DIRECTORY_SEPARATOR . $file) && $file !== '.' && $file !== '..') {
                 $locales[] = $file;
             }
         }
