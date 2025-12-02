@@ -1,5 +1,7 @@
 <?php
 
+use Lenorix\FluentizyLaravelTools\Facades\JsonTranslations;
+
 it('can load translations from JSON format', function () {
     $jsonContent = <<<'JSON'
 {
@@ -8,7 +10,7 @@ it('can load translations from JSON format', function () {
     "goodbye": "Goodbye!"
 }
 JSON;
-    $translations = app(\Lenorix\FluentizyLaravelTools\Services\Formats\JsonTranslations::class)->load($jsonContent);
+    $translations = JsonTranslations::load($jsonContent);
     expect($translations)->toEqual([
         'hello' => 'Hello',
         'welcome' => 'Welcome to our application!',
@@ -23,7 +25,7 @@ it('can save translations to JSON format', function () {
         'goodbye' => 'Goodbye!',
     ];
 
-    $jsonContent = app(\Lenorix\FluentizyLaravelTools\Services\Formats\JsonTranslations::class)->save($translations);
+    $jsonContent = JsonTranslations::save($translations);
     expect($jsonContent)->toContain('"hello": "Hello"')
         ->and($jsonContent)->toContain('"welcome": "Welcome to our application!"')
         ->and($jsonContent)->toContain('"goodbye": "Goodbye!"');

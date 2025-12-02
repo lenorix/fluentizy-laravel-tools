@@ -3,9 +3,8 @@
 namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Lenorix\FluentizyLaravelTools\Services\Formats\JsonTranslations;
-use Lenorix\FluentizyLaravelTools\Services\Formats\PhpTranslations;
+use Lenorix\FluentizyLaravelTools\Facades\JsonTranslations;
+use Lenorix\FluentizyLaravelTools\Facades\PhpTranslations;
 use Lenorix\FluentizyLaravelTools\Services\GlobeEmoji;
 use Lenorix\FluentizyLaravelTools\Services\TranslationsExtractor;
 
@@ -80,8 +79,7 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-        app(JsonTranslations::class)
-            ->updateTranslationsFile($outputFile, $newTranslations);
+        JsonTranslations::updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
 
@@ -94,8 +92,7 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-        app(PhpTranslations::class)
-            ->updateTranslationsFile($outputFile, $newTranslations);
+        PhpTranslations::updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
 

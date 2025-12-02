@@ -1,5 +1,7 @@
 <?php
 
+use Lenorix\FluentizyLaravelTools\Facades\PhpTranslations;
+
 it('can load translations from PHP format', function () {
     $phpContent = <<<'PHP'
 <?php
@@ -11,7 +13,7 @@ return [
 ];
 PHP;
 
-    $translations = app(\Lenorix\FluentizyLaravelTools\Services\Formats\PhpTranslations::class)->load($phpContent);
+    $translations = PhpTranslations::load($phpContent);
     expect($translations)->toEqual([
         'hello' => 'Hello',
         'welcome' => 'Welcome to our application!',
@@ -26,7 +28,7 @@ it('can save translations to PHP format', function () {
         'goodbye' => 'Goodbye!',
     ];
 
-    $phpContent = app(\Lenorix\FluentizyLaravelTools\Services\Formats\PhpTranslations::class)->save($translations);
+    $phpContent = PhpTranslations::save($translations);
     expect($phpContent)->toContain("'hello' => 'Hello'")
         ->and($phpContent)->toContain("'welcome' => 'Welcome to our application!'")
         ->and($phpContent)->toContain("'goodbye' => 'Goodbye!'");
