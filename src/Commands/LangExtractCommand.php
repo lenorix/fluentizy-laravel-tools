@@ -19,6 +19,7 @@ class LangExtractCommand extends Command
             $srcDirs = $this->srcDirs($this->option('src'));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
+
             return self::FAILURE;
         }
 
@@ -27,6 +28,7 @@ class LangExtractCommand extends Command
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
             ], locale: config('app.locale')));
+
             return self::FAILURE;
         }
 
@@ -34,6 +36,7 @@ class LangExtractCommand extends Command
             $newTranslations = $this->extract($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
+
             return self::FAILURE;
         }
 
@@ -51,14 +54,15 @@ class LangExtractCommand extends Command
                 'emoji' => $this->emoji($locale),
             ], locale: config('app.locale')));
         }
+
         return self::SUCCESS;
     }
 
     private function updateLocaleJson(string $locale, array $newTranslations, ?string $outDir): string
     {
-        $subPath = $locale . '.json';
+        $subPath = $locale.'.json';
         $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $subPath
+            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
 
         $oldTranslations = [];
@@ -67,20 +71,21 @@ class LangExtractCommand extends Command
         }
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
         file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
         return $outputFile;
     }
 
     private function updateLocalePhp(string $locale, array $newTranslations, ?string $outDir, string $filename = 'translations'): string
     {
-        $subPath = $locale . '/' . $filename . '.php';
+        $subPath = $locale.'/'.$filename.'.php';
         $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $subPath
+            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
 
         $oldTranslations = [];
         if (file_exists($outputFile)) {
             $oldTranslations = include $outputFile;
-            if (!is_array($oldTranslations)) {
+            if (! is_array($oldTranslations)) {
                 $oldTranslations = [];
             }
         }
@@ -90,15 +95,16 @@ class LangExtractCommand extends Command
         foreach ($translations as $key => $value) {
             $escapedKey = str_replace("'", "\\'", $key);
             $escapedValue = str_replace("'", "\\'", $value);
-            $content .= "\n    '" . $escapedKey . "' => '" . $escapedValue . "',";
+            $content .= "\n    '".$escapedKey."' => '".$escapedValue."',";
         }
         $content .= "\n];\n";
 
         $dir = dirname($outputFile);
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
         file_put_contents($outputFile, $content);
+
         return $outputFile;
     }
 
@@ -108,12 +114,13 @@ class LangExtractCommand extends Command
         foreach ($newTranslations as $key => $value) {
             $translations[$key] = $oldTranslations[$key] ?? $value;
         }
+
         return $translations;
     }
 
     /**
-     * @param array|null $sourceDirs
      * @return array Extracted translation strings
+     *
      * @throws \Exception When file processing fails
      */
     private function extract(?array $sourceDirs = null): array
@@ -144,22 +151,24 @@ class LangExtractCommand extends Command
         }
 
         ksort($newTranslations);
+
         return $newTranslations;
     }
 
     /**
-     * @param mixed $file
      * @return array Translation strings found in the file
+     *
      * @throws \Exception When file processing fails
      */
     private function translationStrings(mixed $file): array
     {
         $content = file_get_contents($file->getPathname());
         if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
-            $error = 'Processing {$file->getPathname()} failed: ' . error_get_last();
+            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
             Log::error($error);
             throw new \Exception($error);
         }
+
         return array_map(function ($item) {
             if (str_contains($item, '::')) {
                 $item = explode('::', $item, 2)[1];
@@ -167,15 +176,12 @@ class LangExtractCommand extends Command
                 array_shift($parts);
                 $item = implode('.', $parts);
             }
+
             return $item;
         }, $matches[1]);
     }
 
-    /**
-     * @param string|null $locale
-     * @return array
-     */
-    private function locales(?string $locale, ?string $outDir, bool $json=false): array
+    private function locales(?string $locale, ?string $outDir, bool $json = false): array
     {
         if ($locale) {
             return [$locale];
@@ -188,16 +194,15 @@ class LangExtractCommand extends Command
         foreach ($files as $file) {
             if ($json && str_ends_with($file, '.json')) {
                 $locales[] = str_replace('.json', '', $file);
-            } elseif (is_dir($langDir . DIRECTORY_SEPARATOR . $file) && $file !== '.' && $file !== '..') {
+            } elseif (is_dir($langDir.DIRECTORY_SEPARATOR.$file) && $file !== '.' && $file !== '..') {
                 $locales[] = $file;
             }
         }
+
         return $locales;
     }
 
     /**
-     * @param array|null $sourceDirs
-     * @return array|null
      * @throws \Exception
      */
     private function srcDirs(?array $sourceDirs): ?array
@@ -215,6 +220,7 @@ class LangExtractCommand extends Command
                 throw new \Exception("Source directory not found: {$dir}");
             }
         }
+
         return $realSourceDirs;
     }
 
