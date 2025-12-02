@@ -3,6 +3,7 @@
 namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
@@ -60,24 +61,27 @@ class LangExtractCommand extends Command
         return self::SUCCESS;
     }
 
-    private function extract(): array
+    private function extract(?string $directory = null): array
     {
-        $directories = [
-            base_path('app'),
-            base_path('routes'),
-            base_path('config'),
-            base_path('resources/views'),
-        ];
+        $directories = [];
         $newTranslations = [];
+
+        if ($directory) {
+            $directories[] = $directory;
+        } else {
+            $directories[] = base_path('app');
+            $directories[] = base_path('routes');
+            $directories[] = base_path('config');
+            $directories[] = base_path('resources/views');
+        }
 
         foreach ($directories as $directory) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
             foreach ($files as $file) {
                 if ($file->isFile() && in_array($file->getExtension(), ['php', 'blade.php'])) {
-                    $content = file_get_contents($file->getPathname());
-                    preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]\s*\)/", $content, $matches);
+                    $matches = $this->translationStrings($file);
 
-                    foreach ($matches[1] as $key) {
+                    foreach ($matches as $key) {
                         if (! isset($newTranslations[$key])) {
                             $newTranslations[$key] = $key;
                         }
@@ -91,6 +95,22 @@ class LangExtractCommand extends Command
         return $newTranslations;
     }
 
+    /**
+     * @param mixed $file
+     * @return array Translation strings found in the file
+     * @throws \Exception When file processing fails
+     */
+    private function translationStrings(mixed $file): array
+    {
+        $content = file_get_contents($file->getPathname());
+        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]\s*\)/", $content, $matches) === false) {
+            $error = 'Processing {$file->getPathname()} failed: ' . error_get_last();
+            Log::error($error);
+            throw new \Exception($error);
+        }
+        return $matches[1];
+    }
+
     private function emoji(string $locale): string
     {
         [$language, $country] = explode('_', $locale.'_');
@@ -102,16 +122,18 @@ class LangExtractCommand extends Command
                 'en', 'de', 'fr', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi',
                 'tr', 'pl', 'cs', 'hu', 'ro', 'sk', 'sl', 'hr', 'sr', 'bg', 'el',
                 'is', 'ga', 'cy', 'eu', 'gl', 'ca', 'af', 'sw', 'zu', 'xh', 'st',
+                'ru', 'uk', 'be', 'et', 'lv', 'lt', 'sq', 'mk', 'mt', 'ar', 'am',
+                'so', 'mg', 'sn', 'ny', 'rw', 'tn', 'ts', 'ss', 've', 'ti', 'ff',
+                'wo', 'bm', 'lg', 'om',
             ],
             '🌎' => [
-                'ar', 'he', 'fa', 'ur', 'hi', 'bn', 'ta', 'te', 'ml', 'kn', 'mr',
-                'gu', 'pa', 'si', 'ne', 'am', 'sw', 'yo', 'ig', 'ha', 'zu', 'xh',
-                'br', 'ht', 'yo', 'ig', 'ha', 'km', 'lo', 'my', 'th', 'vi', 'id',
+                'bn', 'ta', 'te', 'ml', 'kn', 'mr', 'qu', 'gn', 'ay', 'ha', 'br',
+                'gu', 'pa', 'si', 'ne', 'yo', 'ig', 'ha', 'km', 'lo', 'my', 'ht',
             ],
             '🌏' => [
-                'ru', 'zh', 'ja', 'ko', 'uk', 'be', 'kk', 'mn', 'vi', 'th', 'id',
-                'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'et', 'lv', 'lt', 'hr',
-                'sr', 'bg', 'el', 'hy', 'az', 'ka', 'te', 'ta', 'ml', 'kn', 'mr',
+                'zh', 'ja', 'ko', 'kk', 'mn', 'vi', 'th', 'fa', 'ur', 'he', 'id',
+                'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'hi', 'mr', 'ml', 'kn',
+                'hy', 'az', 'ka', 'te', 'ta', 'mi', 'sm', 'to', 'fj', 'ty',
             ],
             '🌐' => [
                 'eo', 'ia',
