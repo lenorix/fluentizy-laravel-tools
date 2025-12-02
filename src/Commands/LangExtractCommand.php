@@ -29,7 +29,6 @@ class LangExtractCommand extends Command
             $srcDirs = $this->srcDirs($this->option('src'));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
-
             return self::FAILURE;
         }
 
@@ -38,7 +37,6 @@ class LangExtractCommand extends Command
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
             ], locale: config('app.locale')));
-
             return self::FAILURE;
         }
 
@@ -46,18 +44,22 @@ class LangExtractCommand extends Command
             $newTranslations = app(TranslationsExtractor::class)->fromDirs($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
-
             return self::FAILURE;
         }
 
         foreach ($locales as $locale) {
             gc_collect_cycles();
 
-            if ($this->option('json')) {
-                $outputFile = $this->updateLocaleJson($locale, $newTranslations, $outDir);
-            } else {
-                $filename = $this->option('filename') ?: 'translations';
-                $outputFile = $this->updateLocalePhp($locale, $newTranslations, $outDir, filename: $filename);
+            try {
+                if ($this->option('json')) {
+                    $outputFile = $this->updateLocaleJson($locale, $newTranslations, $outDir);
+                } else {
+                    $filename = $this->option('filename') ?: 'translations';
+                    $outputFile = $this->updateLocalePhp($locale, $newTranslations, $outDir, filename: $filename);
+                }
+            } catch (\Exception $e) {
+                $this->error($e->getMessage());
+                return self::FAILURE;
             }
 
             $this->info(__('fluentizy-tools::translations.ready', [
