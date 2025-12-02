@@ -15,6 +15,13 @@ class LangExtractCommand extends Command
     {
         $outDir = $this->option('out') ?: null;
 
+        try {
+            $srcDirs = $this->srcDirs($this->option('src'));
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+            return self::FAILURE;
+        }
+
         $locales = $this->locales($this->argument('locale'), $outDir, $this->option('json'));
         if (empty($locales)) {
             $this->error(__('fluentizy-tools::translations.locale-error', [
@@ -24,7 +31,7 @@ class LangExtractCommand extends Command
         }
 
         try {
-            $newTranslations = $this->extract($this->srcDirs($this->option('src')));
+            $newTranslations = $this->extract($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -191,6 +198,7 @@ class LangExtractCommand extends Command
     /**
      * @param array|null $sourceDirs
      * @return array|null
+     * @throws \Exception
      */
     private function srcDirs(?array $sourceDirs): ?array
     {
@@ -203,6 +211,8 @@ class LangExtractCommand extends Command
             $realDir = realpath($dir);
             if ($realDir && is_dir($realDir)) {
                 $realSourceDirs[] = $realDir;
+            } elseif ($realDir === false) {
+                throw new \Exception("Source directory not found: {$dir}");
             }
         }
         return $realSourceDirs;
