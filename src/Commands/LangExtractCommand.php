@@ -13,7 +13,7 @@ class LangExtractCommand extends Command
 
     public function handle(): int
     {
-        $locales = $this->locales($this->argument('locale'));
+        $locales = $this->locales($this->argument('locale'), $this->option('json'));
         if (empty($locales)) {
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
@@ -163,7 +163,7 @@ class LangExtractCommand extends Command
      * @param string|null $locale
      * @return array
      */
-    private function locales(?string $locale): array
+    private function locales(?string $locale, bool $json=false): array
     {
         if ($locale) {
             return [$locale];
@@ -172,8 +172,10 @@ class LangExtractCommand extends Command
         $locales = [];
         $files = scandir(lang_path());
         foreach ($files as $file) {
-            if (str_ends_with($file, '.json')) {
+            if ($json && str_ends_with($file, '.json')) {
                 $locales[] = str_replace('.json', '', $file);
+            } elseif (is_dir(lang_path($file)) && $file !== '.' && $file !== '..') {
+                $locales[] = $file;
             }
         }
         return $locales;
