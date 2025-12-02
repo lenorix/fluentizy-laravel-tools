@@ -78,7 +78,8 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-        app(JsonTranslations::class)->updateTranslationsFile($outputFile, $newTranslations);
+        app(JsonTranslations::class)
+            ->updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
 
@@ -91,7 +92,8 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-        app(PhpTranslations::class)->updateTranslationsFile($outputFile, $newTranslations);
+        app(PhpTranslations::class)
+            ->updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
 
