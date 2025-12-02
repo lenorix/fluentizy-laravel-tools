@@ -63,7 +63,6 @@ trait TranslationsFormat
         foreach ($newTranslations as $key => $value) {
             $translations[$key] = $oldTranslations[$key] ?? $value;
         }
-
         return $translations;
     }
 }
