@@ -4,6 +4,7 @@ namespace Lenorix\FluentizyLaravelTools\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Lenorix\FluentizyLaravelTools\Services\GlobeEmoji;
 
 class LangExtractCommand extends Command
 {
@@ -58,7 +59,7 @@ class LangExtractCommand extends Command
 
             $this->info(__('fluentizy-tools::translations.ready', [
                 'path' => $outputFile,
-                'emoji' => $this->emoji($locale),
+                'emoji' => app(GlobeEmoji::class)->emoji($locale),
             ], locale: config('app.locale')));
         }
 
@@ -229,42 +230,5 @@ class LangExtractCommand extends Command
         }
 
         return $realSourceDirs;
-    }
-
-    private function emoji(string $locale): string
-    {
-        [$language, $country] = explode('_', $locale.'_');
-        $language = strtolower($language);
-        $country = strtolower($country);
-
-        $globes = [
-            '🌍' => [
-                'en', 'de', 'fr', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi', 'wo', 'ff', 'ts', 'sn', 'ny',
-                'tr', 'pl', 'cs', 'hu', 'ro', 'sk', 'sl', 'hr', 'sr', 'bg', 'el', 'om', 'ti', 'tn', 'mg', 'ss',
-                'is', 'ga', 'cy', 'eu', 'gl', 'ca', 'af', 'sw', 'zu', 'xh', 'st', 'lg', 've', 'rw', 'so', 'bm',
-                'ru', 'uk', 'be', 'et', 'lv', 'lt', 'sq', 'mk', 'mt', 'ar', 'am',
-            ],
-            '🌎' => [
-                'bn', 'ta', 'te', 'ml', 'kn', 'mr', 'qu', 'gn', 'ay', 'ha', 'br', 'ht', 'km', 'lo', 'my', 'ha',
-                'gu', 'pa', 'si', 'ne', 'yo', 'ig',
-            ],
-            '🌏' => [
-                'zh', 'ja', 'ko', 'kk', 'mn', 'vi', 'th', 'fa', 'ur', 'he', 'id', 'ty', 'mi', 'sm', 'to', 'az',
-                'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'hi', 'mr', 'ml', 'kn', 'fj', 'ka', 'te', 'ta', 'hy',
-            ],
-            '🌐' => [
-                'eo', 'ia',
-            ],
-        ];
-
-        foreach ([$country, $language] as $code) {
-            foreach ($globes as $emoji => $codes) {
-                if (in_array($code, $codes)) {
-                    return $emoji;
-                }
-            }
-        }
-
-        return '🌐';
     }
 }
