@@ -50,6 +50,13 @@ trait TranslationsFormat
         $this->saveToFile($translations, $filePath);
     }
 
+    public function updateTranslations(string $content, array $newTranslations): string
+    {
+        $oldTranslations = $this->load($content);
+        $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
+        return $this->save($translations);
+    }
+
     private function recoverPreviousTranslations(array $oldTranslations, array $newTranslations): array
     {
         $translations = [];
