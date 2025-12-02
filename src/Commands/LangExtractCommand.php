@@ -18,7 +18,6 @@ class LangExtractCommand extends Command
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
             ], locale: config('app.locale')));
-
             return self::FAILURE;
         }
 
@@ -26,7 +25,6 @@ class LangExtractCommand extends Command
             $newTranslations = $this->extract($this->srcDirs($this->option('src')));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
-
             return self::FAILURE;
         }
 
@@ -44,10 +42,14 @@ class LangExtractCommand extends Command
                 'emoji' => $this->emoji($locale),
             ], locale: config('app.locale')));
         }
-
         return self::SUCCESS;
     }
 
+    /**
+     * @param string $locale
+     * @param array $newTranslations
+     * @return string
+     */
     private function updateLocaleJson(string $locale, array $newTranslations): string
     {
         $outputFile = lang_path($locale.'.json');
@@ -57,7 +59,6 @@ class LangExtractCommand extends Command
         }
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
         file_put_contents($outputFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-
         return $outputFile;
     }
 
@@ -72,7 +73,19 @@ class LangExtractCommand extends Command
             }
         }
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-        $content = "<?php\n\nreturn " . var_export($translations, true) . ";\n";
+
+        $content = "<?php\n\nreturn [";
+        foreach ($translations as $key => $value) {
+            $escapedKey = str_replace("'", "\\'", $key);
+            $escapedValue = str_replace("'", "\\'", $value);
+            $content .= "\n    '" . $escapedKey . "' => '" . $escapedValue . "',";
+        }
+        $content .= "\n];\n";
+
+        $dir = dirname($outputFile);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
         file_put_contents($outputFile, $content);
         return $outputFile;
     }
@@ -83,13 +96,12 @@ class LangExtractCommand extends Command
         foreach ($newTranslations as $key => $value) {
             $translations[$key] = $oldTranslations[$key] ?? $value;
         }
-
         return $translations;
     }
 
     /**
+     * @param array|null $sourceDirs
      * @return array Extracted translation strings
-     *
      * @throws \Exception When file processing fails
      */
     private function extract(?array $sourceDirs = null): array
@@ -120,27 +132,37 @@ class LangExtractCommand extends Command
         }
 
         ksort($newTranslations);
-
         return $newTranslations;
     }
 
     /**
+     * @param mixed $file
      * @return array Translation strings found in the file
-     *
      * @throws \Exception When file processing fails
      */
     private function translationStrings(mixed $file): array
     {
         $content = file_get_contents($file->getPathname());
-        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]\s*\)/", $content, $matches) === false) {
-            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
+        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
+            $error = 'Processing {$file->getPathname()} failed: ' . error_get_last();
             Log::error($error);
             throw new \Exception($error);
         }
-
-        return $matches[1];
+        return array_map(function ($item) {
+            if (str_contains($item, '::')) {
+                $item = explode('::', $item, 2)[1];
+                $parts = explode('.', $item);
+                array_shift($parts);
+                $item = implode('.', $parts);
+            }
+            return $item;
+        }, $matches[1]);
     }
 
+    /**
+     * @param string|null $locale
+     * @return array
+     */
     private function locales(?string $locale): array
     {
         if ($locale) {
@@ -154,10 +176,13 @@ class LangExtractCommand extends Command
                 $locales[] = str_replace('.json', '', $file);
             }
         }
-
         return $locales;
     }
 
+    /**
+     * @param array|null $sourceDirs
+     * @return array|null
+     */
     private function srcDirs(?array $sourceDirs): ?array
     {
         if (empty($sourceDirs)) {
@@ -171,7 +196,6 @@ class LangExtractCommand extends Command
                 $realSourceDirs[] = $realDir;
             }
         }
-
         return $realSourceDirs;
     }
 
