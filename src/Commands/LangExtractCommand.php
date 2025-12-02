@@ -7,7 +7,13 @@ use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {--json : Use JSON format instead of PHP} {--src=* : Source dir to scan} {--out= : Output dir} {locale? : Locale to extract translations for}';
+    public $signature = 'lang:extract
+        {--json : Use JSON format instead of PHP}
+        {--src=* : Source dir to scan}
+        {--out= : Output dir}
+        {--filename=translations : Filename for PHP translations files}
+        {locale? : Locale to extract translations for}
+    ';
 
     public $description = 'Extract translation strings to lang files';
 
@@ -46,7 +52,8 @@ class LangExtractCommand extends Command
             if ($this->option('json')) {
                 $outputFile = $this->updateLocaleJson($locale, $newTranslations, $outDir);
             } else {
-                $outputFile = $this->updateLocalePhp($locale, $newTranslations, $outDir);
+                $filename = $this->option('filename') ?: 'translations';
+                $outputFile = $this->updateLocalePhp($locale, $newTranslations, $outDir, filename: $filename);
             }
 
             $this->info(__('fluentizy-tools::translations.ready', [
