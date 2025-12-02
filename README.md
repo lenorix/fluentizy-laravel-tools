@@ -74,7 +74,6 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [lenorix](https://github.com/lenorix)
 - [All Contributors](../../contributors)
 
 ## License
