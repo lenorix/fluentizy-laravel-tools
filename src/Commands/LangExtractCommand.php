@@ -5,6 +5,7 @@ namespace Lenorix\FluentizyLaravelTools\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Lenorix\FluentizyLaravelTools\Services\GlobeEmoji;
+use Lenorix\FluentizyLaravelTools\Services\TranslationsExtractor;
 
 class LangExtractCommand extends Command
 {
@@ -40,7 +41,7 @@ class LangExtractCommand extends Command
         }
 
         try {
-            $newTranslations = $this->extract($srcDirs);
+            $newTranslations = app(TranslationsExtractor::class)->fromDirs($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
 
@@ -124,69 +125,6 @@ class LangExtractCommand extends Command
         }
 
         return $translations;
-    }
-
-    /**
-     * @return array Extracted translation strings
-     *
-     * @throws \Exception When file processing fails
-     */
-    private function extract(?array $sourceDirs = null): array
-    {
-        $directories = [];
-        $newTranslations = [];
-
-        if ($sourceDirs) {
-            $directories = $sourceDirs;
-        } else {
-            $directories[] = base_path('app');
-            $directories[] = base_path('routes');
-            $directories[] = base_path('config');
-            $directories[] = base_path('resources/views');
-        }
-
-        foreach ($directories as $directory) {
-            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
-            foreach ($files as $file) {
-                if ($file->isFile() && in_array($file->getExtension(), ['php', 'blade.php'])) {
-                    foreach ($this->translationStrings($file) as $key) {
-                        if (! isset($newTranslations[$key])) {
-                            $newTranslations[$key] = $key;
-                        }
-                    }
-                }
-            }
-        }
-
-        ksort($newTranslations);
-
-        return $newTranslations;
-    }
-
-    /**
-     * @return array Translation strings found in the file
-     *
-     * @throws \Exception When file processing fails
-     */
-    private function translationStrings(mixed $file): array
-    {
-        $content = file_get_contents($file->getPathname());
-        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
-            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
-            Log::error($error);
-            throw new \Exception($error);
-        }
-
-        return array_map(function ($item) {
-            if (str_contains($item, '::')) {
-                $item = explode('::', $item, 2)[1];
-                $parts = explode('.', $item);
-                array_shift($parts);
-                $item = implode('.', $parts);
-            }
-
-            return $item;
-        }, $matches[1]);
     }
 
     private function locales(?string $locale, ?string $outDir, bool $json = false): array
