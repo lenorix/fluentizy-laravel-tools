@@ -78,14 +78,7 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-
-        $oldTranslations = [];
-        if (file_exists($outputFile)) {
-            $oldTranslations = app(JsonTranslations::class)->loadFromFile($outputFile);
-        }
-        $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-        app(JsonTranslations::class)->saveToFile($translations, $outputFile);
-
+        app(JsonTranslations::class)->updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
 
@@ -98,30 +91,8 @@ class LangExtractCommand extends Command
         $outputFile = $outDir
             ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
             : lang_path($subPath);
-
-        $oldTranslations = [];
-        if (file_exists($outputFile)) {
-            $oldTranslations = app(PhpTranslations::class)->loadFromFile($outputFile);
-        }
-        $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
-
-        $dir = dirname($outputFile);
-        if (! is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-
-        app(PhpTranslations::class)->saveToFile($translations, $outputFile);
+        app(PhpTranslations::class)->updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
-    }
-
-    private function recoverPreviousTranslations(array $oldTranslations, array $newTranslations): array
-    {
-        $translations = [];
-        foreach ($newTranslations as $key => $value) {
-            $translations[$key] = $oldTranslations[$key] ?? $value;
-        }
-
-        return $translations;
     }
 
     private function locales(?string $locale, ?string $outDir, bool $json = false): array
