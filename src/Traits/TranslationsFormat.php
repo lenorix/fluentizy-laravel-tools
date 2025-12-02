@@ -2,12 +2,23 @@
 
 namespace Lenorix\FluentizyLaravelTools\Traits;
 
+/**
+ * Trait for translation file formats common functionality.
+ */
 trait TranslationsFormat
 {
+    /**
+     * Load translations from a string content.
+     */
     abstract public function load(string $content): array;
+
+    /**
+     * Save translations to a string content.
+     */
     abstract public function save(array $translations): string;
 
     /**
+     * Load translations from a file.
      * @throws \Exception When file read/write fails
      */
     public function loadFromFile(string $filePath): array
@@ -20,6 +31,7 @@ trait TranslationsFormat
     }
 
     /**
+     * Save translations to a file.
      * @throws \Exception When file read/write fails
      */
     public function saveToFile(array $translations, string $filePath): void
@@ -32,6 +44,7 @@ trait TranslationsFormat
     }
 
     /**
+     * Update translations file with new translations, preserving existing ones and removing obsolete ones.
      * @throws \Exception When file read/write fails
      */
     public function updateTranslationsFile(string $filePath, array $newTranslations): void
@@ -50,6 +63,9 @@ trait TranslationsFormat
         $this->saveToFile($translations, $filePath);
     }
 
+    /**
+     * Update translations in string with new translations, preserving existing ones and removing obsolete ones.
+     */
     public function updateTranslations(string $content, array $newTranslations): string
     {
         $oldTranslations = $this->load($content);
