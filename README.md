@@ -23,7 +23,7 @@ You can install the package via composer:
 composer require --dev lenorix/fluentizy-laravel-tools
 ```
 
-That's all! This is enough to get started using `lang:extract` command.
+That's all! This is enough to [get started using](#usage) `lang:extract` command.
 
 You can publish the config file with:
 
@@ -47,7 +47,7 @@ php artisan lang:extract es
 
 This command will update your translation file based on `__('...')` usages in your code.
 
-If there are `lang/*.json` files, to update all these files, run:
+If there are `lang/*.json` or `lang/*/*.php` files, to update all these files, run:
 
 ```bash
 php artisan lang:extract
