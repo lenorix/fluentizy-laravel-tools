@@ -2,9 +2,10 @@
 
 namespace Lenorix\FluentizyLaravelTools\Services\Formats;
 
+use Lenorix\FluentizyLaravelTools\Interfaces\TranslationsFormatter;
 use Lenorix\FluentizyLaravelTools\Traits\TranslationsFormat;
 
-class PhpTranslations
+class PhpTranslations implements TranslationsFormatter
 {
     use TranslationsFormat;
 
