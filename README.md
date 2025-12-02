@@ -5,7 +5,9 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/lenorix/fluentizy-laravel-tools/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/lenorix/fluentizy-laravel-tools/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/lenorix/fluentizy-laravel-tools.svg?style=flat-square)](https://packagist.org/packages/lenorix/fluentizy-laravel-tools)
 
-Internationalize and localize your Laravel applications easily.
+Extract all translation strings from your codebase and manage your language files effortlessly.
+
+The i18n & l10n will be easier than ever with this package!
 
 ## Support us
 
