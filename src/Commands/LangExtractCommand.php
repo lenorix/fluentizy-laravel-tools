@@ -35,7 +35,13 @@ class LangExtractCommand extends Command
             }
         }
 
-        $newTranslations = $this->extract();
+        try {
+            $newTranslations = $this->extract();
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+            return self::FAILURE;
+        }
+
         foreach ($locales as $locale) {
             gc_collect_cycles();
 
@@ -61,6 +67,11 @@ class LangExtractCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @param string|null $directory Directory to scan, or null for default directories
+     * @return array Extracted translation strings
+     * @throws \Exception When file processing fails
+     */
     private function extract(?string $directory = null): array
     {
         $directories = [];
