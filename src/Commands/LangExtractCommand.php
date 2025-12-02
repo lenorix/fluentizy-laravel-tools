@@ -14,25 +14,13 @@ class LangExtractCommand extends Command
     public function handle(): int
     {
         $locale = $this->argument('locale');
-        $locales = [];
+        $locales = $this->locales($locale);
 
-        if ($locale) {
-            $locales[] = $locale;
-        } else {
-            $files = scandir(lang_path());
-            foreach ($files as $file) {
-                if (str_ends_with($file, '.json')) {
-                    $locales[] = str_replace('.json', '', $file);
-                }
-            }
-
-            if (empty($locales)) {
-                $this->error(__('fluentizy-tools::translations.locale-error', [
-                    'path' => lang_path(),
-                ], locale: config('app.locale')));
-
-                return self::FAILURE;
-            }
+        if (empty($locales)) {
+            $this->error(__('fluentizy-tools::translations.locale-error', [
+                'path' => lang_path(),
+            ], locale: config('app.locale')));
+            return self::FAILURE;
         }
 
         try {
@@ -90,9 +78,7 @@ class LangExtractCommand extends Command
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
             foreach ($files as $file) {
                 if ($file->isFile() && in_array($file->getExtension(), ['php', 'blade.php'])) {
-                    $matches = $this->translationStrings($file);
-
-                    foreach ($matches as $key) {
+                    foreach ($this->translationStrings($file) as $key) {
                         if (! isset($newTranslations[$key])) {
                             $newTranslations[$key] = $key;
                         }
@@ -102,7 +88,6 @@ class LangExtractCommand extends Command
         }
 
         ksort($newTranslations);
-
         return $newTranslations;
     }
 
@@ -130,21 +115,18 @@ class LangExtractCommand extends Command
 
         $globes = [
             '🌍' => [
-                'en', 'de', 'fr', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi',
-                'tr', 'pl', 'cs', 'hu', 'ro', 'sk', 'sl', 'hr', 'sr', 'bg', 'el',
-                'is', 'ga', 'cy', 'eu', 'gl', 'ca', 'af', 'sw', 'zu', 'xh', 'st',
+                'en', 'de', 'fr', 'it', 'es', 'pt', 'nl', 'sv', 'no', 'da', 'fi', 'wo', 'ff', 'ts', 'sn', 'ny',
+                'tr', 'pl', 'cs', 'hu', 'ro', 'sk', 'sl', 'hr', 'sr', 'bg', 'el', 'om', 'ti', 'tn', 'mg', 'ss',
+                'is', 'ga', 'cy', 'eu', 'gl', 'ca', 'af', 'sw', 'zu', 'xh', 'st', 'lg', 've', 'rw', 'so', 'bm',
                 'ru', 'uk', 'be', 'et', 'lv', 'lt', 'sq', 'mk', 'mt', 'ar', 'am',
-                'so', 'mg', 'sn', 'ny', 'rw', 'tn', 'ts', 'ss', 've', 'ti', 'ff',
-                'wo', 'bm', 'lg', 'om',
             ],
             '🌎' => [
-                'bn', 'ta', 'te', 'ml', 'kn', 'mr', 'qu', 'gn', 'ay', 'ha', 'br',
-                'gu', 'pa', 'si', 'ne', 'yo', 'ig', 'ha', 'km', 'lo', 'my', 'ht',
+                'bn', 'ta', 'te', 'ml', 'kn', 'mr', 'qu', 'gn', 'ay', 'ha', 'br', 'ht', 'km', 'lo', 'my', 'ha',
+                'gu', 'pa', 'si', 'ne', 'yo', 'ig',
             ],
             '🌏' => [
-                'zh', 'ja', 'ko', 'kk', 'mn', 'vi', 'th', 'fa', 'ur', 'he', 'id',
-                'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'hi', 'mr', 'ml', 'kn',
-                'hy', 'az', 'ka', 'te', 'ta', 'mi', 'sm', 'to', 'fj', 'ty',
+                'zh', 'ja', 'ko', 'kk', 'mn', 'vi', 'th', 'fa', 'ur', 'he', 'id', 'ty', 'mi', 'sm', 'to', 'az',
+                'ms', 'tl', 'su', 'jv', 'my', 'km', 'lo', 'hi', 'mr', 'ml', 'kn', 'fj', 'ka', 'te', 'ta', 'hy',
             ],
             '🌐' => [
                 'eo', 'ia',
@@ -159,6 +141,26 @@ class LangExtractCommand extends Command
             }
         }
 
-        return array_rand($globes);
+        return '🌐';
+    }
+
+    /**
+     * @param string|null $locale
+     * @return array
+     */
+    public function locales(?string $locale): array
+    {
+        if ($locale) {
+            return [$locale];
+        }
+
+        $locales = [];
+        $files = scandir(lang_path());
+        foreach ($files as $file) {
+            if (str_ends_with($file, '.json')) {
+                $locales[] = str_replace('.json', '', $file);
+            }
+        }
+        return $locales;
     }
 }
