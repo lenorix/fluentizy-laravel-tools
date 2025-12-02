@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class LangExtractCommand extends Command
 {
-    public $signature = 'lang:extract {--json : Use JSON format} {--src=* : Source dir to scan} {--out= : Output dir} {locale? : Locale to extract translations for}';
+    public $signature = 'lang:extract {--json : Use JSON format instead of PHP} {--src=* : Source dir to scan} {--out= : Output dir} {locale? : Locale to extract translations for}';
 
     public $description = 'Extract translation strings to lang files';
 
