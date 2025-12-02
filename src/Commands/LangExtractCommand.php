@@ -76,9 +76,7 @@ class LangExtractCommand extends Command
     private function updateLocaleJson(string $locale, array $newTranslations, ?string $outDir): string
     {
         $subPath = $locale.'.json';
-        $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
-            : lang_path($subPath);
+        $outputFile = $this->outputFile($outDir, $subPath);
         JsonTranslations::updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
@@ -89,9 +87,7 @@ class LangExtractCommand extends Command
     private function updateLocalePhp(string $locale, array $newTranslations, ?string $outDir, string $filename = 'translations'): string
     {
         $subPath = $locale.'/'.$filename.'.php';
-        $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
-            : lang_path($subPath);
+        $outputFile = $this->outputFile($outDir, $subPath);
         PhpTranslations::updateTranslationsFile($outputFile, $newTranslations);
         return $outputFile;
     }
@@ -137,5 +133,21 @@ class LangExtractCommand extends Command
         }
 
         return $realSourceDirs;
+    }
+
+    /**
+     * @throws \Exception When output file path cannot be determined
+     */
+    private function outputFile(?string $outDir, string $subPath): string
+    {
+        $outputFile = $outDir
+            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $subPath
+            : lang_path($subPath);
+
+        if (!$outputFile) {
+            throw new \Exception("Failed to determine output file path for: {$subPath}");
+        }
+
+        return $outputFile;
     }
 }
