@@ -121,7 +121,7 @@ class LangExtractCommand extends Command
     }
 
     /**
-     * @throws \Exception
+     * @throws \Exception When source directory is not found
      */
     private function srcDirs(?array $sourceDirs): ?array
     {
