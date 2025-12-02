@@ -1,6 +1,6 @@
 <?php
 
-namespace Lenorix\FluentizyLaravelTools\Services\Formats;
+namespace Lenorix\FluentizyLaravelTools\Traits;
 
 trait TranslationsFormat
 {
