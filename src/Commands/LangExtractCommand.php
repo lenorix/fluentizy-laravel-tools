@@ -148,9 +148,15 @@ class LangExtractCommand extends Command
      */
     private function outputFile(?string $outDir, string $subPath): string
     {
-        $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
-            : lang_path($subPath);
+        if($outDir) {
+            $realPath = realpath(rtrim($outDir, DIRECTORY_SEPARATOR));
+            if ($realPath === false || !is_dir($realPath)) {
+                throw new \Exception("Output directory not found: {$outDir}");
+            }
+            $outputFile = $realPath . DIRECTORY_SEPARATOR . $subPath;
+        } else {
+            $outputFile = lang_path($subPath);
+        }
 
         if (! $outputFile) {
             throw new \Exception("Failed to determine output file path for: {$subPath}");
