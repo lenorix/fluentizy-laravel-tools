@@ -84,7 +84,6 @@ class LangExtractCommand extends Command
         $subPath = $locale.'.json';
         $outputFile = $this->outputFile($outDir, $subPath);
         JsonTranslations::updateTranslationsFile($outputFile, $newTranslations);
-
         return $outputFile;
     }
 
@@ -96,7 +95,6 @@ class LangExtractCommand extends Command
         $subPath = $locale.'/'.$filename.'.php';
         $outputFile = $this->outputFile($outDir, $subPath);
         PhpTranslations::updateTranslationsFile($outputFile, $newTranslations);
-
         return $outputFile;
     }
 
