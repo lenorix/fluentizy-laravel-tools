@@ -75,8 +75,8 @@ class TranslationsExtractor
         ];
 
         foreach ($functions as $function) {
-            if (preg_match_all("/".$function."\(\s*['\"](.*?)['\"]/", $content, $matches) === false) {
-                $error = 'Processing failed: ' . error_get_last();
+            if (preg_match_all('/'.$function."\(\s*['\"](.*?)['\"]/", $content, $matches) === false) {
+                $error = 'Processing failed: '.error_get_last();
                 Log::error($error);
                 throw new \Exception($error);
             }
@@ -94,7 +94,7 @@ class TranslationsExtractor
             }, $matches[1]);
 
             foreach ($newTranslations as $key) {
-                if (!isset($translations[$key])) {
+                if (! isset($translations[$key])) {
                     $translations[$key] = $key;
                 }
             }
