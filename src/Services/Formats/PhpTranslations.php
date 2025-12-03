@@ -49,6 +49,7 @@ class PhpTranslations implements TranslationsFormatter
      */
     private function unescape(string $string): string
     {
-        return stripcslashes($string);
+        // Properly unescape backslashes and single quotes
+        return str_replace(['\\\\', "\\'"], ['\\', "'"], $string);
     }
 }

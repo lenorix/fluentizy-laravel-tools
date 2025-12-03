@@ -73,7 +73,8 @@ class TranslationsExtractor
         $content = file_get_contents($pathname);
         if ($content === false) {
             $lastError = error_get_last();
-            $error = "Processing {$pathname} failed: ".($lastError['message'] ?? 'Unknown error');
+            $errorMsg = $lastError['message'] ?? 'Unknown error';
+            $error = sprintf('Processing %s failed: %s', $pathname, $errorMsg);
             Log::error($error);
             throw new \Exception($error);
         }
@@ -92,7 +93,8 @@ class TranslationsExtractor
         $result = preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches);
         if ($result === false) {
             $lastError = error_get_last();
-            $error = 'Processing content failed: '.($lastError['message'] ?? 'Unknown preg_match_all error');
+            $errorMsg = $lastError['message'] ?? 'Unknown preg_match_all error';
+            $error = sprintf('Processing content failed: %s', $errorMsg);
             Log::error($error);
             throw new \Exception($error);
         }
