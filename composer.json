@@ -5,7 +5,14 @@
         "lenorix",
         "fluentizy",
         "laravel",
-        "fluentizy-laravel-tools"
+        "fluentizy-laravel-tools",
+        "translations",
+        "tms",
+        "i18n",
+        "l10n",
+        "internationalization",
+        "localization",
+        "extract"
     ],
     "homepage": "https://github.com/lenorix/fluentizy-laravel-tools",
     "license": "Unlicense",
