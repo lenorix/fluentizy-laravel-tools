@@ -18,7 +18,7 @@ class LangExtractCommand extends Command
         {locale? : Locale to extract translations for}
     ';
 
-    public $description = 'Extract translation strings to lang files ready to be translated or uploaded to fluentizy.lenorix.com';
+    public $description = 'Extract translation strings to lang files ready to be translated or uploaded to https://fluentizy.lenorix.com';
 
     public function handle(): int
     {
@@ -67,6 +67,7 @@ class LangExtractCommand extends Command
             ], locale: config('app.locale')));
         }
 
+        $this->info("\n".__('fluentizy-tools::translations.complete', locale: config('app.locale')));
         return self::SUCCESS;
     }
 
