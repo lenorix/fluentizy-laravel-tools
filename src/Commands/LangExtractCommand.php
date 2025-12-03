@@ -23,21 +23,18 @@ class LangExtractCommand extends Command
     public function handle(): int
     {
         $outDir = $this->option('out') ?: null;
-
         try {
             $srcDirs = $this->srcDirs($this->option('src'));
+            $locales = $this->locales($this->argument('locale'), $outDir, $this->option('json'));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
-
             return self::FAILURE;
         }
 
-        $locales = $this->locales($this->argument('locale'), $outDir, $this->option('json'));
         if (empty($locales)) {
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
             ], locale: config('app.locale')));
-
             return self::FAILURE;
         }
 
@@ -45,7 +42,6 @@ class LangExtractCommand extends Command
             $newTranslations = app(TranslationsExtractor::class)->fromDirs($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
-
             return self::FAILURE;
         }
 
@@ -61,7 +57,6 @@ class LangExtractCommand extends Command
                 }
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
-
                 return self::FAILURE;
             }
 
@@ -72,7 +67,6 @@ class LangExtractCommand extends Command
         }
 
         $this->info("\n".__('fluentizy-tools::translations.complete', locale: config('app.locale')));
-
         return self::SUCCESS;
     }
 
@@ -98,6 +92,9 @@ class LangExtractCommand extends Command
         return $outputFile;
     }
 
+    /**
+     * @throws \Exception
+     */
     private function locales(?string $locale, ?string $outDir, bool $json = false): array
     {
         if ($locale) {
