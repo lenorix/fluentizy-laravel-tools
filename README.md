@@ -22,6 +22,7 @@ Also, using [fluentizy](https://fluentizy.lenorix.com) is a great way to support
 - Supports `trans()`, `__()`, and `@lang()` functions.
 - Update language files automatically without overwriting existing translations.
 - Artisan command for easy integration into your workflow.
+- Tests running with PHP 8.1-8.5 and Laravel 10.x-12.x to ensure compatibility.
 
 ## Installation
 
