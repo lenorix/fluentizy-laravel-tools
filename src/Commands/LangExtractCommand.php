@@ -108,6 +108,10 @@ class LangExtractCommand extends Command
 
         $langDir = $outDir ? rtrim($outDir, DIRECTORY_SEPARATOR) : lang_path();
         $files = scandir($langDir);
+        
+        if ($files === false) {
+            return [];
+        }
 
         $locales = [];
         foreach ($files as $file) {
@@ -148,9 +152,15 @@ class LangExtractCommand extends Command
      */
     private function outputFile(?string $outDir, string $subPath): string
     {
-        $outputFile = $outDir
-            ? realpath(rtrim($outDir, DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.$subPath
-            : lang_path($subPath);
+        if ($outDir) {
+            $realOutDir = realpath(rtrim($outDir, DIRECTORY_SEPARATOR));
+            if ($realOutDir === false) {
+                throw new \Exception("Output directory not found: {$outDir}");
+            }
+            $outputFile = $realOutDir.DIRECTORY_SEPARATOR.$subPath;
+        } else {
+            $outputFile = lang_path($subPath);
+        }
 
         if (! $outputFile) {
             throw new \Exception("Failed to determine output file path for: {$subPath}");

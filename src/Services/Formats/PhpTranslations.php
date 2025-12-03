@@ -37,18 +37,18 @@ class PhpTranslations implements TranslationsFormatter
     }
 
     /**
-     * Escape single quotes in a string for PHP array syntax.
+     * Escape special characters in a string for PHP array syntax.
      */
     private function escape(string $string): string
     {
-        return str_replace("'", "\\'", $string);
+        return addcslashes($string, "'\\");
     }
 
     /**
-     * Unescape single quotes in a string from PHP array syntax.
+     * Unescape special characters in a string from PHP array syntax.
      */
     private function unescape(string $string): string
     {
-        return str_replace("\\'", "'", $string);
+        return stripcslashes($string);
     }
 }

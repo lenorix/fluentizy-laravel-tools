@@ -26,15 +26,33 @@ class TranslationsExtractor
         }
 
         foreach ($directories as $directory) {
-            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
-            foreach ($files as $file) {
-                if ($file->isFile() && in_array($file->getExtension(), ['php', 'blade.php'])) {
-                    foreach ($this->fromFile($file) as $key) {
-                        if (! isset($newTranslations[$key])) {
-                            $newTranslations[$key] = $key;
+            if (! is_dir($directory)) {
+                Log::warning("Directory does not exist or is not accessible: {$directory}");
+
+                continue;
+            }
+
+            try {
+                $files = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
+                );
+                foreach ($files as $file) {
+                    if ($file->isFile()) {
+                        $filename = $file->getFilename();
+                        // Check for .php files and .blade.php files
+                        if (str_ends_with($filename, '.php') || str_ends_with($filename, '.blade.php')) {
+                            foreach ($this->fromFile($file) as $key) {
+                                if (! isset($newTranslations[$key])) {
+                                    $newTranslations[$key] = $key;
+                                }
+                            }
                         }
                     }
                 }
+            } catch (\UnexpectedValueException $e) {
+                Log::warning("Failed to read directory: {$directory} - ".$e->getMessage());
+
+                continue;
             }
         }
 
@@ -50,9 +68,11 @@ class TranslationsExtractor
      */
     public function fromFile(mixed $file): array
     {
-        $content = file_get_contents($file->getPathname());
+        $pathname = $file->getPathname();
+        $content = file_get_contents($pathname);
         if ($content === false) {
-            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
+            $lastError = error_get_last();
+            $error = "Processing {$pathname} failed: ".($lastError['message'] ?? 'Unknown error');
             Log::error($error);
             throw new \Exception($error);
         }
@@ -68,7 +88,8 @@ class TranslationsExtractor
     public function fromString(string $content): array
     {
         if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
-            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
+            $lastError = error_get_last();
+            $error = 'Processing content failed: '.($lastError['message'] ?? 'Unknown preg_match_all error');
             Log::error($error);
             throw new \Exception($error);
         }
