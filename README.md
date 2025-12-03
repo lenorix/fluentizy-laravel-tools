@@ -9,22 +9,22 @@ Extract all translation strings from your codebase and manage your language file
 
 The i18n & l10n will be easier than ever with this package!
 
-## Support us
+## 🛟 Support us
 
 Help us continue developing and maintaining this package by sponsoring us.
 
 Also, using [fluentizy](https://fluentizy.lenorix.com) is a great way to support the project!
 
-## Features
+## 🚀 Features
 
 - Scan chosen directories for translation strings.
 - Supports both JSON and PHP translation files.
-- Supports `trans()`, `__()`, and `@lang()` functions.
+- Supports `__()`, `trans()`, and `@lang()` functions.
 - Update language files automatically without overwriting existing translations.
 - Artisan command for easy integration into your workflow.
-- Tests running with PHP 8.1-8.5 and Laravel 10.x-12.x to ensure compatibility.
+- Tests running with PHP 8.0-8.5 and Laravel 9.x-12.x to ensure compatibility.
 
-## Installation
+## 📦 Installation
 
 You can install the package via composer:
 
@@ -46,7 +46,7 @@ You can publish the translation files with:
 php artisan vendor:publish --tag="fluentizy-tools-translations"
 ```
 
-## Usage
+## 📖 Usage
 
 To extract translations from your codebase, run:
 
@@ -67,7 +67,7 @@ Behavior:
 - If a string is missing in the translation file, it will be added with an empty value.
 - If a string exists in the translation file but is not found in the codebase, it will be removed.
 
-## Testing
+## 🧪 Testing
 
 ```bash
 composer test
