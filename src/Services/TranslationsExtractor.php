@@ -52,22 +52,23 @@ class TranslationsExtractor
     {
         $content = file_get_contents($file->getPathname());
         if ($content === false) {
-            $error = 'Processing {$file->getPathname()} failed: ' . error_get_last();
+            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
             Log::error($error);
             throw new \Exception($error);
         }
+
         return $this->fromString($content);
     }
 
     /**
-     * @param string $content
      * @return array|string[]
+     *
      * @throws \Exception
      */
     public function fromString(string $content): array
     {
         if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
-            $error = 'Processing {$file->getPathname()} failed: ' . error_get_last();
+            $error = 'Processing {$file->getPathname()} failed: '.error_get_last();
             Log::error($error);
             throw new \Exception($error);
         }

@@ -19,6 +19,7 @@ class PhpTranslations implements TranslationsFormatter
             $value = $this->unescape($match[2]);
             $translations[$key] = $value;
         }
+
         return $translations;
     }
 

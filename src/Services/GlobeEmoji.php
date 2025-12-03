@@ -7,7 +7,7 @@ class GlobeEmoji
     /**
      * Get the globe emoji for a given locale.
      *
-     * @param string $locale The locale, language or country code (e.g., 'en_US', 'fr_FR', 'zh').
+     * @param  string  $locale  The locale, language or country code (e.g., 'en_US', 'fr_FR', 'zh').
      * @return string The corresponding globe emoji.
      */
     public function emoji(string $locale): string

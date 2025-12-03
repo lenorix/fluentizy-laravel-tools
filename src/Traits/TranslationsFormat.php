@@ -19,6 +19,7 @@ trait TranslationsFormat
 
     /**
      * Load translations from a file.
+     *
      * @throws \Exception When file read/write fails
      */
     public function loadFromFile(string $filePath): array
@@ -27,11 +28,13 @@ trait TranslationsFormat
         if ($content === false) {
             throw new \Exception("Failed to read file: {$filePath}");
         }
+
         return $this->load($content);
     }
 
     /**
      * Save translations to a file.
+     *
      * @throws \Exception When file read/write fails
      */
     public function saveToFile(array $translations, string $filePath): void
@@ -45,6 +48,7 @@ trait TranslationsFormat
 
     /**
      * Update translations file with new translations, preserving existing ones and removing obsolete ones.
+     *
      * @throws \Exception When file read/write fails
      */
     public function updateTranslationsFile(string $filePath, array $newTranslations): void
@@ -70,6 +74,7 @@ trait TranslationsFormat
     {
         $oldTranslations = $this->load($content);
         $translations = $this->recoverPreviousTranslations($oldTranslations, $newTranslations);
+
         return $this->save($translations);
     }
 
@@ -79,6 +84,7 @@ trait TranslationsFormat
         foreach ($newTranslations as $key => $value) {
             $translations[$key] = $oldTranslations[$key] ?? $value;
         }
+
         return $translations;
     }
 }
