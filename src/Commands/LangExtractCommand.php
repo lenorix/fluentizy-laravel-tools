@@ -107,6 +107,10 @@ class LangExtractCommand extends Command
         $langDir = $outDir ? rtrim($outDir, DIRECTORY_SEPARATOR) : lang_path();
         $files = scandir($langDir);
 
+        if ($files === false) {
+            throw new \Exception("Failed to read language directory: {$langDir}");
+        }
+
         $locales = [];
         foreach ($files as $file) {
             if ($json && str_ends_with($file, '.json')) {
