@@ -18,8 +18,9 @@ Also, using [fluentizy](https://fluentizy.lenorix.com) is a great way to support
 ## Features
 
 - Scan chosen directories for translation strings.
-- Update language files automatically without overwriting existing translations.
 - Supports both JSON and PHP translation files.
+- Supports `trans()`, `__()`, and `@lang()` functions.
+- Update language files automatically without overwriting existing translations.
 - Artisan command for easy integration into your workflow.
 
 ## Installation

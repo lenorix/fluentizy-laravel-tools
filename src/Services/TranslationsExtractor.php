@@ -67,22 +67,39 @@ class TranslationsExtractor
      */
     public function fromString(string $content): array
     {
-        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
-            $error = 'Processing failed: '.error_get_last();
-            Log::error($error);
-            throw new \Exception($error);
-        }
+        $translations = [];
+        $functions = [
+            '__',
+            'trans',
+            '@lang',
+        ];
 
-        return array_map(function ($item) {
-            // Packages translations start with 'package::file.' and must be stripped.
-            if (str_contains($item, '::')) {
-                $item = explode('::', $item, 2)[1];
-                $parts = explode('.', $item);
-                array_shift($parts);
-                $item = implode('.', $parts);
+        foreach ($functions as $function) {
+            if (preg_match_all("/".$function."\(\s*['\"](.*?)['\"]/", $content, $matches) === false) {
+                $error = 'Processing failed: ' . error_get_last();
+                Log::error($error);
+                throw new \Exception($error);
             }
 
-            return $item;
-        }, $matches[1]);
+            $newTranslations = array_map(function ($item) {
+                // Packages translations start with 'package::file.' and must be stripped.
+                if (str_contains($item, '::')) {
+                    $item = explode('::', $item, 2)[1];
+                    $parts = explode('.', $item);
+                    array_shift($parts);
+                    $item = implode('.', $parts);
+                }
+
+                return $item;
+            }, $matches[1]);
+
+            foreach ($newTranslations as $key) {
+                if (!isset($translations[$key])) {
+                    $translations[$key] = $key;
+                }
+            }
+        }
+
+        return $translations;
     }
 }
