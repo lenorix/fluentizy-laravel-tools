@@ -46,10 +46,33 @@ class PhpTranslations implements TranslationsFormatter
 
     /**
      * Unescape special characters in a string from PHP array syntax.
+     * This reverses the escaping done by addcslashes() for single quotes and backslashes.
      */
     private function unescape(string $string): string
     {
-        // Properly unescape backslashes and single quotes
-        return str_replace(['\\\\', "\\'"], ['\\', "'"], $string);
+        // Process the string character by character to properly handle escape sequences
+        $result = '';
+        $length = strlen($string);
+        $i = 0;
+        
+        while ($i < $length) {
+            if ($string[$i] === '\\' && $i + 1 < $length) {
+                $nextChar = $string[$i + 1];
+                // Handle escaped backslash and single quote
+                if ($nextChar === '\\' || $nextChar === "'") {
+                    $result .= $nextChar;
+                    $i += 2;
+                } else {
+                    // Not an escape sequence we added, keep the backslash
+                    $result .= $string[$i];
+                    $i++;
+                }
+            } else {
+                $result .= $string[$i];
+                $i++;
+            }
+        }
+        
+        return $result;
     }
 }

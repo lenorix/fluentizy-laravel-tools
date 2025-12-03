@@ -39,8 +39,8 @@ class TranslationsExtractor
                 foreach ($files as $file) {
                     if ($file->isFile()) {
                         $filename = $file->getFilename();
-                        // Check for .php files and .blade.php files
-                        if (str_ends_with($filename, '.php') || str_ends_with($filename, '.blade.php')) {
+                        // Check for .php files (including .blade.php files)
+                        if (str_ends_with($filename, '.php')) {
                             foreach ($this->fromFile($file) as $key) {
                                 if (! isset($newTranslations[$key])) {
                                     $newTranslations[$key] = $key;
