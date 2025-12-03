@@ -108,7 +108,7 @@ class LangExtractCommand extends Command
 
         $langDir = $outDir ? rtrim($outDir, DIRECTORY_SEPARATOR) : lang_path();
         $files = scandir($langDir);
-        
+
         if ($files === false) {
             return [];
         }

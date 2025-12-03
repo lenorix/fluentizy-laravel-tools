@@ -54,7 +54,7 @@ class PhpTranslations implements TranslationsFormatter
         $result = '';
         $length = strlen($string);
         $i = 0;
-        
+
         while ($i < $length) {
             if ($string[$i] === '\\' && $i + 1 < $length) {
                 $nextChar = $string[$i + 1];
@@ -72,7 +72,7 @@ class PhpTranslations implements TranslationsFormatter
                 $i++;
             }
         }
-        
+
         return $result;
     }
 }
