@@ -69,6 +69,7 @@ class TranslationsExtractor
     public function fromFile(mixed $file): array
     {
         $pathname = $file->getPathname();
+        error_clear_last();
         $content = file_get_contents($pathname);
         if ($content === false) {
             $lastError = error_get_last();
@@ -87,7 +88,9 @@ class TranslationsExtractor
      */
     public function fromString(string $content): array
     {
-        if (preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches) === false) {
+        error_clear_last();
+        $result = preg_match_all("/__\(\s*[\'\"](.*?)[\'\"]/", $content, $matches);
+        if ($result === false) {
             $lastError = error_get_last();
             $error = 'Processing content failed: '.($lastError['message'] ?? 'Unknown preg_match_all error');
             Log::error($error);
@@ -104,6 +107,6 @@ class TranslationsExtractor
             }
 
             return $item;
-        }, $matches[1]);
+        }, $matches[1] ?? []);
     }
 }
