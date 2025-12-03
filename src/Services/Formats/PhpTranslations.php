@@ -42,12 +42,13 @@ class PhpTranslations implements TranslationsFormatter
     private function escape(string $string): string
     {
         $string = str_replace("'", "\\'", $string);
-        $string = str_replace("\n", "\\n", $string);
-        $string = str_replace("\r", "\\r", $string);
-        $string = str_replace("\t", "\\t", $string);
-        $string = str_replace("\$", "\\\$", $string);
-        $string = str_replace("\0", "\\0", $string);
-        return str_replace("\\", "\\\\", $string);
+        $string = str_replace("\n", '\\n', $string);
+        $string = str_replace("\r", '\\r', $string);
+        $string = str_replace("\t", '\\t', $string);
+        $string = str_replace('$', '\\$', $string);
+        $string = str_replace("\0", '\\0', $string);
+
+        return str_replace('\\', '\\\\', $string);
     }
 
     /**
@@ -56,11 +57,12 @@ class PhpTranslations implements TranslationsFormatter
     private function unescape(string $string): string
     {
         $string = str_replace("\\'", "'", $string);
-        $string = str_replace("\\n", "\n", $string);
-        $string = str_replace("\\r", "\r", $string);
-        $string = str_replace("\\t", "\t", $string);
-        $string = str_replace("\\\$", "\$", $string);
-        $string = str_replace("\\0", "\0", $string);
-        return str_replace("\\\\", "\\", $string);
+        $string = str_replace('\\n', "\n", $string);
+        $string = str_replace('\\r', "\r", $string);
+        $string = str_replace('\\t', "\t", $string);
+        $string = str_replace('\\$', '$', $string);
+        $string = str_replace('\\0', "\0", $string);
+
+        return str_replace('\\\\', '\\', $string);
     }
 }
