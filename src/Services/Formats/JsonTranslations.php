@@ -12,9 +12,10 @@ class JsonTranslations implements TranslationsFormatter
     public function load(string $content): array
     {
         $translations = json_decode($content, true);
-        if (!is_array($translations)) {
+        if (! is_array($translations)) {
             throw new \Exception('Invalid JSON translations format');
         }
+
         return $translations;
     }
 

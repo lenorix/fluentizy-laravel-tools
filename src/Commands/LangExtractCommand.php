@@ -28,6 +28,7 @@ class LangExtractCommand extends Command
             $locales = $this->locales($this->argument('locale'), $outDir, $this->option('json'));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
+
             return self::FAILURE;
         }
 
@@ -35,6 +36,7 @@ class LangExtractCommand extends Command
             $this->error(__('fluentizy-tools::translations.locale-error', [
                 'path' => lang_path(),
             ], locale: config('app.locale')));
+
             return self::FAILURE;
         }
 
@@ -42,6 +44,7 @@ class LangExtractCommand extends Command
             $newTranslations = app(TranslationsExtractor::class)->fromDirs($srcDirs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
+
             return self::FAILURE;
         }
 
@@ -57,6 +60,7 @@ class LangExtractCommand extends Command
                 }
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
+
                 return self::FAILURE;
             }
 
@@ -67,6 +71,7 @@ class LangExtractCommand extends Command
         }
 
         $this->info("\n".__('fluentizy-tools::translations.complete', locale: config('app.locale')));
+
         return self::SUCCESS;
     }
 
@@ -78,6 +83,7 @@ class LangExtractCommand extends Command
         $subPath = $locale.'.json';
         $outputFile = $this->outputFile($outDir, $subPath);
         JsonTranslations::updateTranslationsFile($outputFile, $newTranslations);
+
         return $outputFile;
     }
 
@@ -89,6 +95,7 @@ class LangExtractCommand extends Command
         $subPath = $locale.'/'.$filename.'.php';
         $outputFile = $this->outputFile($outDir, $subPath);
         PhpTranslations::updateTranslationsFile($outputFile, $newTranslations);
+
         return $outputFile;
     }
 
@@ -147,12 +154,12 @@ class LangExtractCommand extends Command
      */
     private function outputFile(?string $outDir, string $subPath): string
     {
-        if($outDir) {
+        if ($outDir) {
             $realPath = realpath(rtrim($outDir, DIRECTORY_SEPARATOR));
-            if ($realPath === false || !is_dir($realPath)) {
+            if ($realPath === false || ! is_dir($realPath)) {
                 throw new \Exception("Output directory not found: {$outDir}");
             }
-            $outputFile = $realPath . DIRECTORY_SEPARATOR . $subPath;
+            $outputFile = $realPath.DIRECTORY_SEPARATOR.$subPath;
         } else {
             $outputFile = lang_path($subPath);
         }
