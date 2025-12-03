@@ -15,6 +15,13 @@ Help us continue developing and maintaining this package by sponsoring us.
 
 Also, using [fluentizy](https://fluentizy.lenorix.com) is a great way to support the project!
 
+## Features
+
+- Scan chosen directories for translation strings.
+- Update language files automatically without overwriting existing translations.
+- Supports both JSON and PHP translation files.
+- Artisan command for easy integration into your workflow.
+
 ## Installation
 
 You can install the package via composer:
